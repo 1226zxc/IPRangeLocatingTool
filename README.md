@@ -1,0 +1,2 @@
+# IPRangeLocatingTool
+提供一个ip地址，在提供的ip范围列表中寻找属于它的ip段
