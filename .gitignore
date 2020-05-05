@@ -3,3 +3,4 @@
 !src/**/**
 !pom.xml
 !IPRangeLocatingTool/**/**
+!IPRangeLocatingTool
