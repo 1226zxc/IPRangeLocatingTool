@@ -62,15 +62,15 @@ public class EntryPoint {
             System.exit(1);
         }
 
-        Map<String, List<String>> results = getResults(userSheet, institutionSheet);
+        Map<Record, List<String>> results = getResults(userSheet, institutionSheet);
 
         List<Map<String, String>> outputRecords = listOutputRecords(results);
         writeRecords(outputRecords);
     }
 
-    private Map<String, List<String>> getResults(WorkSheet userSheet, WorkSheet institutionSheet) {
+    private Map<Record, List<String>> getResults(WorkSheet userSheet, WorkSheet institutionSheet) {
         List<Record> institutionRecords = institutionSheet.listRecords();
-        Map<String, List<String>> results = new HashMap<>(institutionRecords.size());
+        Map<Record, List<String>> results = new HashMap<>(institutionRecords.size());
         institutionRecords.forEach(institutionRecord -> {
             List<String> institutionMandatory = institutionSheet.getMandatoryFieldName();
             List<Cell> institutionCells = institutionRecord.getCells();
@@ -87,8 +87,9 @@ public class EntryPoint {
                 logger.error("record:{} has an invalid ip range,the correct one is 'ip-ip'", institutionRecord);
                 return;
             }
+            // ips that hit the range
             List<String> hits = listHits(userSheet, ipRange);
-            results.put(range.getContent(), hits);
+            results.put(institutionRecord, hits);
         });
         return results;
     }
@@ -116,16 +117,12 @@ public class EntryPoint {
         return results;
     }
 
-    private List<Map<String, String>> listOutputRecords(Map<String, List<String>> rangeToIpIds) {
+    private List<Map<String, String>> listOutputRecords(Map<Record, List<String>> rangeToIpIds) {
         List<Map<String, String>> results = new LinkedList<>();
-        Map<String, String> headers = new LinkedHashMap<>(2);
-        headers.put(IP_RANGE, null);
-        headers.put(IP_ID, null);
-        headers.put("Count", null);
-        results.add(headers);
-        rangeToIpIds.forEach((range, ids) -> {
+        rangeToIpIds.forEach((key, ids) -> {
             Map<String, String> record = new LinkedHashMap<>(2);
-            record.put(IP_RANGE, range);
+            List<Cell> cells = key.getCells();
+            cells.forEach(cell -> record.put(cell.getColumn(), cell.getContent()));
             record.put(IP_ID, ids.toString().replace("[", "").replace("]", ""));
             record.put("Count", String.valueOf(ids.size()));
             results.add(record);

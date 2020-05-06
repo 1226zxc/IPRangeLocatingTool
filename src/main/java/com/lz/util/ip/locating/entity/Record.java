@@ -15,19 +15,6 @@ public class Record {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Record)) return false;
-        Record record = (Record) o;
-        return Objects.equals(cells, record.cells);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(cells);
-    }
-
-    @Override
     public String toString() {
         return "Record{" +
                 "cells=" + cells +
